@@ -24,7 +24,7 @@ jobs:
             curl \
             unzip \
             git \
-            openjdk17-jdk \
+            openjdk21 \
             libc6-compat \
             gcompat
 
