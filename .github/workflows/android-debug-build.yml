@@ -54,8 +54,8 @@ jobs:
           yes | sdkmanager --sdk_root="$ANDROID_SDK_ROOT" --licenses > /dev/null || true
           sdkmanager --sdk_root="$ANDROID_SDK_ROOT" \
             "platform-tools" \
-            "platforms;android-34" \
-            "build-tools;34.0.0"
+            "platforms;android-36" \
+            "build-tools;36.0.0"
 
       - name: Grant execute permission for gradlew
         run: chmod +x android/gradlew

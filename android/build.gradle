@@ -1,20 +1,10 @@
 buildscript {
     repositories {
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/public' }
-        maven { url 'https://maven.aliyun.com/repository/gradle-plugin' }
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.11.1'  // ← new
-    }
-}
-
-// این قسمت مهمه - نسخه رو اجبار می‌کنه
-configurations.all {
-    resolutionStrategy {
-        force 'com.android.tools.build:gradle:8.2.2'
+        classpath 'com.android.tools.build:gradle:8.11.1'
     }
 }
 
@@ -22,8 +12,6 @@ apply from: "variables.gradle"
 
 allprojects {
     repositories {
-        maven { url 'https://maven.aliyun.com/repository/google' }
-        maven { url 'https://maven.aliyun.com/repository/public' }
         google()
         mavenCentral()
     }
