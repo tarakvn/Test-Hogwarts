@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Media } from '@capacitor-community/media';
 import { Capacitor } from '@capacitor/core';
 
 interface SpeechResultLike {
@@ -85,7 +84,6 @@ export function useSpeechSpell(onTranscript: (text: string) => void) {
     };
 
     recognition.onend = () => {
-      // keep the ear open so a counter-spell can be heard on the same screen
       if (wantedRef.current && recognitionRef.current === recognition) {
         try {
           recognition.start();
@@ -100,22 +98,8 @@ export function useSpeechSpell(onTranscript: (text: string) => void) {
     recognitionRef.current = recognition;
 
     try {
-      // Request runtime microphone permission on Android
-      if (Capacitor.getPlatform() === "android") {
-        const permission = await Media.requestPermissions();
-        if (permission.microphone !== "granted") {
-          console.log("Microphone permission denied");
-          setError("not-allowed");
-          setListening(false);
-          wantedRef.current = false;
-          return;
-        }
-      }
-
-      // Still call getUserMedia to force the permission prompt / verify mic works
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
-      });
+      // Request microphone only (no extra storage permissions)
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       stream.getTracks().forEach((track) => track.stop());
 
       setTimeout(() => {
