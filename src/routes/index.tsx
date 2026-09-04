@@ -31,18 +31,39 @@ export const Route = createFileRoute("/")({
   component: CastPage,
 });
 
+function normalizeSpoken(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+function compactSpoken(text: string) {
+  return normalizeSpoken(text).replace(/\s/g, "");
+}
+
+function spokenIncludes(transcript: string, phrase: string) {
+  const haystack = normalizeSpoken(transcript);
+  const needle = normalizeSpoken(phrase);
+  if (!needle) return false;
+  if (haystack.includes(needle)) return true;
+  const compactNeedle = compactSpoken(phrase);
+  // Short tokens like "nox" stay word-like; longer incantations match without spaces.
+  if (compactNeedle.length < 5) return false;
+  return compactSpoken(transcript).includes(compactNeedle);
+}
+
+function spellPhrases(spell: Spell) {
+  return [spell.name, spell.pronunciation, ...spell.aliases];
+}
+
 function findSpell(transcript: string): Spell | null {
-  const text = transcript.toLowerCase();
-  return (
-    spells.find((spell) =>
-      [spell.name.toLowerCase(), ...spell.aliases].some((word) => text.includes(word)),
-    ) ?? null
-  );
+  return spells.find((spell) => spellPhrases(spell).some((phrase) => spokenIncludes(transcript, phrase))) ?? null;
 }
 
 function isCounter(transcript: string) {
-  const text = transcript.toLowerCase();
-  return counterWords.some((word) => text.includes(word));
+  return counterWords.some((word) => spokenIncludes(transcript, word));
 }
 
 function buzz(pattern: number | number[]) {
@@ -71,7 +92,11 @@ function CastPage() {
         return;
       }
       const spell = findSpell(text);
-      if (!spell || litRef.current) return;
+      if (!spell) {
+        console.log("Unknown spell:", text);
+        return;
+      }
+      if (litRef.current) return;
       setCast(null);
       setTracing((current) => current ?? spell);
     },

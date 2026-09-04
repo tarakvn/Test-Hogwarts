@@ -60,7 +60,22 @@ export const spells: Spell[] = [
     movement: "An upward-pointing V, like a triangle missing its base.",
     effect: "torch",
     icon: lumosIcon,
-    aliases: ["loomos", "lumus", "lumose", "loo mos", "lomos", "luminous"],
+    aliases: [
+      "loomos",
+      "lumus",
+      "lumose",
+      "loo mos",
+      "lomos",
+      "luminous",
+      "loom us",
+      "loomas",
+      "lumas",
+      "loomis",
+      "lumous",
+      "loo most",
+      "loomose",
+      "bluemos",
+    ],
   },
   {
     id: "expelliarmus",
@@ -81,6 +96,19 @@ export const spells: Spell[] = [
       "expel your mouse",
       "expelliramus",
       "ex peli armus",
+      "expel armus",
+      "expel e armus",
+      "excel armus",
+      "expelli aramus",
+      "expel aramus",
+      "expel harm us",
+      "expelli harm us",
+      "expel armadillo",
+      "expelli armadillo",
+      "expel the armadillo",
+      "expel army us",
+      "expel le armus",
+      "expelliar mus",
     ],
   },
   {
@@ -100,6 +128,17 @@ export const spells: Spell[] = [
       "rictus empra",
       "rictusembra",
       "rictus em pra",
+      "rictus emperor",
+      "rictus empire",
+      "rictus temper",
+      "rictus tempera",
+      "rictus semper",
+      "rick too sempra",
+      "rick to sempra",
+      "rictus and pra",
+      "rictus impra",
+      "rectus empra",
+      "rictus simpler",
     ],
   },
   {
@@ -110,7 +149,14 @@ export const spells: Spell[] = [
     category: "potion",
     effect: "brew",
     icon: boilsIcon,
-    aliases: ["boil cure", "cure for boils"],
+    aliases: [
+      "boil cure",
+      "cure for boils",
+      "cure of boils",
+      "cure boils",
+      "boils potion",
+      "boil potion",
+    ],
     potion: {
       method:
         "A simple potion used to cure boils, often set by the Potions Master of Hogwarts to first-year Potions students.",
@@ -188,7 +234,16 @@ export const snapeGrumbles = [
 ];
 
 /** Spoken words that undo an active spell (Nox and near-transcriptions). */
-export const counterWords = ["nox", "knox", "knocks", "nocks", "nokes", "nooks", "no ox"];
+export const counterWords = [
+  "nox",
+  "knox",
+  "knocks",
+  "nocks",
+  "nokes",
+  "nooks",
+  "no ox",
+  "knock",
+];
 
 export const categories: { id: SpellCategory; label: string; blurb: string }[] = [
   { id: "charm", label: "Charms", blurb: "Incantations that bend the world to your will." },
