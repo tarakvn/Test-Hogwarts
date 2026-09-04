@@ -3,7 +3,6 @@ import expelliarmusIcon from "@/assets/expelliarmus-icon.png";
 import boilsIcon from "@/assets/cure-for-boils-icon.png";
 import rictusempraIcon from "@/assets/rictusempra-icon.png";
 import wingardiumleviosaIcon from "@/assets/wingardium-leviosa-icon.png";
-import { WINGARDIUM_LEVIOSA_PATH } from "@/data/WINGARDIUM_LEVIOSA_PATH";
 
 
 export type SpellEffect = "torch" | "disarm" | "galaxy" | "brew" | "tickle" | "levitate";
@@ -53,6 +52,8 @@ export interface Spell {
 const LUMOS_PATH = "M 22 72 L 50 22 L 78 72";
 const EXPELLIARMUS_PATH = "M 24 24 L 76 24 L 76 76";
 const RICTUSEMPRA_PATH = "M 4 72 " + "C 14 75, 18 69, 21 57 " + "C 24 42, 28 27, 41 19 " + "C 54 11, 74 11, 95 19 " + "C 84 28, 71 36, 58 45 " + "C 52 49, 47 51, 39 51 " + "C 39 45, 40 40, 43 36 " + "C 46 33, 50 31, 54 29";
+const WINGARDIUM_LEVIOSA_PATH = "M 18 18 " + "C 18 45, 30 72, 50 72 " + "C 70 72, 82 48, 82 18 " +  "C 82 35, 82 55, 82 78";
+
 export const spells: Spell[] = [
   {
     id: "lumos",
@@ -161,23 +162,14 @@ export const spells: Spell[] = [
   },
   {
     id: "wingardium-leviosa",
-
     name: "Wingardium Leviosa",
-
     pronunciation: "WING-gar-dium LEV-i-osa",
-
     description: "Make the 'gar' nice and long.",
-
     category: "charm",
-
     wandPath: WINGARDIUM_LEVIOSA_PATH,
-
     movement: "Start from the top left, sweep downward in a smooth curve, rise back up to the right, then finish with a downward flick.",
-
     effect: "levitate",
-
     icon: wingardiumleviosaIcon,
-
     aliases: [
       "wingardium leviosa",
       "wingardium leviosa",
