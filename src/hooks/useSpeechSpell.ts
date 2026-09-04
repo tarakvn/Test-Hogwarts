@@ -11,8 +11,8 @@ interface RecognitionLike {
   start: () => void;
   stop: () => void;
   onresult:
-    | ((event: { results: ArrayLike<SpeechResultLike>; resultIndex: number }) => void)
-    | null;
+  | ((event: { results: ArrayLike<SpeechResultLike>; resultIndex: number }) => void)
+  | null;
   onerror: ((event: { error?: string }) => void) | null;
   onend: (() => void) | null;
 }
@@ -50,7 +50,7 @@ export function useSpeechSpell(onTranscript: (text: string) => void) {
     setListening(false);
   }, []);
 
-  const start = useCallback(() => {
+  const start = useCallback(async () => {
     const Ctor = getCtor();
     if (!Ctor) {
       setSupported(false);
@@ -91,9 +91,14 @@ export function useSpeechSpell(onTranscript: (text: string) => void) {
     };
     recognitionRef.current = recognition;
     try {
+      await navigator.mediaDevices.getUserMedia({
+        audio: true,
+      });
+
       recognition.start();
       setListening(true);
-    } catch {
+    } catch (err) {
+      console.log(err);
       setListening(false);
     }
   }, []);
