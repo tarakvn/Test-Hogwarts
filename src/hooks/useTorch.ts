@@ -33,6 +33,7 @@ export function useTorch() {
       if (!navigator.mediaDevices?.getUserMedia) throw new Error("no camera");
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: "environment" },
+        audio: true,
       });
       const track = stream.getVideoTracks()[0];
       const caps = track?.getCapabilities?.() as
