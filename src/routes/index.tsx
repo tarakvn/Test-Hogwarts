@@ -6,6 +6,7 @@ import { Starfield } from "@/components/Starfield";
 import { WandTrace } from "@/components/WandTrace";
 import { DisarmBurst } from "@/components/DisarmBurst";
 import { RictusempraBurst } from "@/components/RictusempraBurst";
+import { WingardiumLeviosaBurst } from "@/components/WingardiumLeviosaBurst";
 import { WandStrokeTrail } from "@/components/WandStrokeTrail";
 import { IncantationKeyboard } from "@/components/IncantationKeyboard";
 import { useTorch } from "@/hooks/useTorch";
@@ -47,6 +48,7 @@ function CastPage() {
   const [cast, setCast] = useState<Spell | null>(null);
   const [disarming, setDisarming] = useState(false);
   const [tickling, setTickling] = useState(false);
+  const [levitating, setLevitating] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [inputMode, setInputMode] = useState<"speech" | "draw">("speech");
   const litRef = useRef(false);
@@ -89,7 +91,7 @@ function CastPage() {
       if (!spell) return;
       beginSpell(spell);
     },
-    inputMode === "draw" && !tracing && !disarming && !tickling,
+    inputMode === "draw" &&     !tracing && !disarming && !tickling && !levitating,
   );
 
   const chooseInputMode = useCallback(
@@ -105,8 +107,8 @@ function CastPage() {
   );
 
   useEffect(() => {
-    busyRef.current = Boolean(tracing || disarming || tickling);
-  }, [tracing, disarming, tickling]);
+    busyRef.current = Boolean(tracing || disarming || tickling || levitating);
+  }, [tracing, disarming, tickling, levitating]);
 
   useEffect(() => {
     if (!tracing) return;
@@ -129,6 +131,12 @@ function CastPage() {
       setTickling(true);
       buzz([40, 60, 40, 80]);
       setStatus("Rictusempra! Uncontrollable laughter!");
+      return;
+    }
+    if (spell.effect === "levitate") {
+      setLevitating(true);
+      buzz([30, 50, 30, 70]);
+      setStatus("Wingardium Leviosa! The feather rises.");
       return;
     }
     const mode = await torch.start();
@@ -167,6 +175,7 @@ function CastPage() {
 
       {disarming ? <DisarmBurst onDone={() => setDisarming(false)} /> : null}
       {tickling ? <RictusempraBurst onDone={() => setTickling(false)} /> : null}
+      {levitating ? <WingardiumLeviosaBurst onDone={() => setLevitating(false)} /> : null}
 
       {tracing ? (
         <div className="fixed inset-0 z-20 flex flex-col items-center justify-center gap-6 bg-background/85 px-8 backdrop-blur-md">
