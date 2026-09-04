@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Capacitor } from '@capacitor/core';
+import { Capacitor } from "@capacitor/core";
+import { SpeechRecognition } from "@capacitor-community/speech-recognition";
 
 interface SpeechResultLike {
   0?: { transcript?: string };
@@ -19,6 +20,7 @@ interface RecognitionLike {
 }
 
 type RecognitionCtor = new () => RecognitionLike;
+type ListenerHandle = { remove: () => Promise<void> };
 
 function getCtor(): RecognitionCtor | null {
   if (typeof window === "undefined") return null;
@@ -35,11 +37,19 @@ export function useSpeechSpell(onTranscript: (text: string) => void) {
   const [supported, setSupported] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const recognitionRef = useRef<RecognitionLike | null>(null);
+  const nativeListenerRef = useRef<ListenerHandle | null>(null);
   const callbackRef = useRef(onTranscript);
   callbackRef.current = onTranscript;
 
   useEffect(() => {
-    setSupported(getCtor() !== null);
+    if (!Capacitor.isNativePlatform()) {
+      setSupported(getCtor() !== null);
+      return;
+    }
+
+    void SpeechRecognition.available()
+      .then(({ available }) => setSupported(available))
+      .catch(() => setSupported(false));
   }, []);
 
   const wantedRef = useRef(false);
@@ -48,10 +58,54 @@ export function useSpeechSpell(onTranscript: (text: string) => void) {
     wantedRef.current = false;
     recognitionRef.current?.stop();
     recognitionRef.current = null;
+    void nativeListenerRef.current?.remove();
+    nativeListenerRef.current = null;
+    if (Capacitor.isNativePlatform()) void SpeechRecognition.stop();
     setListening(false);
   }, []);
 
   const start = useCallback(async () => {
+    if (Capacitor.isNativePlatform()) {
+      setError(null);
+      wantedRef.current = true;
+
+      try {
+        const permission = await SpeechRecognition.requestPermissions();
+        if (permission.speechRecognition !== "granted") {
+          throw new Error("not-allowed");
+        }
+
+        const { available } = await SpeechRecognition.available();
+        if (!available) throw new Error("not-supported");
+
+        nativeListenerRef.current = await SpeechRecognition.addListener(
+          "partialResults",
+          ({ matches }) => {
+            const transcript = matches.join(" ").trim();
+            if (transcript) callbackRef.current(transcript);
+          },
+        );
+
+        await SpeechRecognition.start({
+          language: "en-US",
+          partialResults: true,
+          popup: false,
+        });
+        setListening(true);
+      } catch (err) {
+        wantedRef.current = false;
+        setListening(false);
+        void nativeListenerRef.current?.remove();
+        nativeListenerRef.current = null;
+        setError(
+          err instanceof Error && err.message === "not-supported"
+            ? "not-supported"
+            : "not-allowed",
+        );
+      }
+      return;
+    }
+
     const Ctor = getCtor();
     if (!Ctor) {
       setSupported(false);
@@ -98,28 +152,25 @@ export function useSpeechSpell(onTranscript: (text: string) => void) {
     recognitionRef.current = recognition;
 
     try {
-      // Request microphone only (no extra storage permissions)
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach((track) => track.stop());
-
-      setTimeout(() => {
-        try {
-          recognition.start();
-          setListening(true);
-        } catch (err) {
-          console.log("recognition start error:", err);
-          setListening(false);
-        }
-      }, 250);
+      recognition.start();
+      setListening(true);
     } catch (err) {
-      console.log("mic permission error:", err);
-      setError("not-allowed");
+      console.log("recognition start error:", err);
+      setError("speech-error");
       setListening(false);
       wantedRef.current = false;
     }
   }, []);
 
-  useEffect(() => () => recognitionRef.current?.stop(), []);
+  useEffect(
+    () => () => {
+      wantedRef.current = false;
+      recognitionRef.current?.stop();
+      void nativeListenerRef.current?.remove();
+      if (Capacitor.isNativePlatform()) void SpeechRecognition.stop();
+    },
+    [],
+  );
 
   return { listening, supported, error, start, stop };
 }
