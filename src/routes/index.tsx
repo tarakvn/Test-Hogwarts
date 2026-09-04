@@ -236,6 +236,12 @@ function CastPage() {
           </p>
         ) : null}
 
+        {speech.error === "not-allowed" ? (
+          <p className="text-center font-sans text-sm text-muted-foreground">
+            Allow the microphone (and camera for Lumos) in system settings, then tap Speak again.
+          </p>
+        ) : null}
+
         {status ? (
           <p
             className="animate-rise text-center font-sans text-sm"
