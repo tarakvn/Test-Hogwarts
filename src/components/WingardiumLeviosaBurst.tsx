@@ -20,7 +20,7 @@ const sparks = [
   { left: 58, delay: 3180, duration: 5000, drift: 26 },
 ];
 
-export function WingardiumLeviosaBurst({ duration = 7200, onDone }: Props) {
+export function WingardiumLeviosaBurst({ duration = 9000, onDone }: Props) {
   useEffect(() => {
     if (!onDone) return;
     const id = window.setTimeout(onDone, duration);
@@ -52,7 +52,7 @@ export function WingardiumLeviosaBurst({ duration = 7200, onDone }: Props) {
       ))}
 
       <div
-        className="absolute bottom-[-18%] left-1/2 h-28 w-12"
+        className="absolute top-[105vh] left-1/2 h-28 w-12"
         style={{
           animation: `leviosa-feather ${duration}ms ease-in-out forwards`,
           filter: "drop-shadow(0 0 12px oklch(0.95 0.18 88 / 65%))",

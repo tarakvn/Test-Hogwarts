@@ -295,9 +295,13 @@
   86% {
     transform: translate(calc(-50% + 11vw), -88vh) rotate(-8deg);
   }
+  92% {
+    opacity: 1;
+    transform: translate(calc(-50% - 4vw), -104vh) rotate(10deg);
+  }
   100% {
     opacity: 0;
-    transform: translate(calc(-50% - 4vw), -118vh) rotate(10deg);
+    transform: translate(calc(-50% - 4vw), -120vh) rotate(10deg);
   }
 }
 
@@ -312,8 +316,11 @@
   72% {
     opacity: 0.75;
   }
+  88% {
+    opacity: 0.75;
+  }
   100% {
     opacity: 0;
-    transform: translateY(-84vh) scale(0.05);
+    transform: translateY(-112vh) scale(0.05);
   }
 }
