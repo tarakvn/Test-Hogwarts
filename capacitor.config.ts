@@ -5,6 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Magic Wand',
   webDir: 'dist/client',
   server: {
+    hostname: 'localhost',
     androidScheme: 'https'
   }
 };
