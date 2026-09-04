@@ -91,14 +91,23 @@ export function useSpeechSpell(onTranscript: (text: string) => void) {
     };
     recognitionRef.current = recognition;
     try {
-      await navigator.mediaDevices.getUserMedia({
+      const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
 
-      recognition.start();
-      setListening(true);
+      stream.getTracks().forEach((track) => track.stop());
+
+      setTimeout(() => {
+        try {
+          recognition.start();
+          setListening(true);
+        } catch (err) {
+          console.log("recognition start error:", err);
+        }
+      }, 200);
+
     } catch (err) {
-      console.log(err);
+      console.log("mic permission error:", err);
       setListening(false);
     }
   }, []);
