@@ -44,7 +44,7 @@ function LibraryPage() {
   return (
     <main className="relative min-h-screen">
       <Starfield density={50} />
-      <div className="relative mx-auto w-full max-w-md px-4 pt-8 pb-14">
+      <div className="relative mx-auto w-full max-w-2xl px-4 pt-8 pb-14">
         <Link
           to="/"
           className="flex items-center gap-2 font-serif text-xs tracking-[0.3em] text-muted-foreground uppercase transition-colors hover:text-primary"

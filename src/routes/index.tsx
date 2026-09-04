@@ -7,6 +7,7 @@ import { WandTrace } from "@/components/WandTrace";
 import { DisarmBurst } from "@/components/DisarmBurst";
 import { RictusempraBurst } from "@/components/RictusempraBurst";
 import { WingardiumLeviosaBurst } from "@/components/WingardiumLeviosaBurst";
+import { AlohomoraBurst } from "@/components/AlohomoraBurst";
 import { WandStrokeTrail } from "@/components/WandStrokeTrail";
 import { IncantationKeyboard } from "@/components/IncantationKeyboard";
 import { useTorch } from "@/hooks/useTorch";
@@ -49,6 +50,7 @@ function CastPage() {
   const [disarming, setDisarming] = useState(false);
   const [tickling, setTickling] = useState(false);
   const [levitating, setLevitating] = useState(false);
+  const [unlocking, setUnlocking] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [inputMode, setInputMode] = useState<"speech" | "draw">("speech");
   const litRef = useRef(false);
@@ -91,7 +93,7 @@ function CastPage() {
       if (!spell) return;
       beginSpell(spell);
     },
-    inputMode === "draw" &&     !tracing && !disarming && !tickling && !levitating,
+    inputMode === "draw" && !tracing && !disarming && !tickling && !levitating && !unlocking,
   );
 
   const chooseInputMode = useCallback(
@@ -107,8 +109,8 @@ function CastPage() {
   );
 
   useEffect(() => {
-    busyRef.current = Boolean(tracing || disarming || tickling || levitating);
-  }, [tracing, disarming, tickling, levitating]);
+    busyRef.current = Boolean(tracing || disarming || tickling || levitating || unlocking);
+  }, [tracing, disarming, tickling, levitating, unlocking]);
 
   useEffect(() => {
     if (!tracing) return;
@@ -139,6 +141,12 @@ function CastPage() {
       setStatus("Wingardium Leviosa! The feather rises.");
       return;
     }
+    if (spell.effect === "unlock") {
+      setUnlocking(true);
+      buzz([30, 60, 30, 100]);
+      setStatus("Alohomora! The lock opens.");
+      return;
+    }
     const mode = await torch.start();
     setStatus(
       mode === "hardware" ? "Wand tip alight — real flame kindled." : "Wandlight fills the screen.",
@@ -146,10 +154,10 @@ function CastPage() {
   }, [torch, tracing]);
 
   useEffect(() => {
-    if (!status) return;
+    if (!status || unlocking) return;
     const id = window.setTimeout(() => setStatus(null), 3500);
     return () => window.clearTimeout(id);
-  }, [status]);
+  }, [status, unlocking]);
 
   const lit = torch.isOn;
 
@@ -176,6 +184,7 @@ function CastPage() {
       {disarming ? <DisarmBurst onDone={() => setDisarming(false)} /> : null}
       {tickling ? <RictusempraBurst onDone={() => setTickling(false)} /> : null}
       {levitating ? <WingardiumLeviosaBurst onDone={() => setLevitating(false)} /> : null}
+      {unlocking ? <AlohomoraBurst open /> : null}
 
       {tracing ? (
         <div className="fixed inset-0 z-20 flex flex-col items-center justify-center gap-6 bg-background/85 px-8 backdrop-blur-md">
@@ -326,12 +335,27 @@ function CastPage() {
         ) : null}
 
         {status ? (
-          <p
-            className="animate-rise text-center font-sans text-sm"
-            style={{ color: lit ? "oklch(0.32 0.06 60)" : "oklch(0.86 0.14 88)" }}
-          >
-            {status}
-          </p>
+          <div data-no-wand className="flex flex-col items-center gap-3">
+            <p
+              className="animate-rise text-center font-sans text-sm"
+              style={{ color: lit ? "oklch(0.32 0.06 60)" : "oklch(0.86 0.14 88)" }}
+            >
+              {status}
+            </p>
+            {unlocking ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setUnlocking(false);
+                  setCast(null);
+                  setStatus(null);
+                }}
+                className="rounded-full border border-primary/40 bg-card/70 px-5 py-2 font-serif text-xs tracking-[0.2em] text-primary uppercase transition-transform active:scale-95"
+              >
+                Clear and cast another
+              </button>
+            ) : null}
+          </div>
         ) : null}
 
         <Link

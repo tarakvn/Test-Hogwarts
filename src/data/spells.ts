@@ -3,9 +3,10 @@ import expelliarmusIcon from "@/assets/expelliarmus-icon.png";
 import boilsIcon from "@/assets/cure-for-boils-icon.png";
 import rictusempraIcon from "@/assets/rictusempra-icon.png";
 import wingardiumleviosaIcon from "@/assets/wingardium-leviosa-icon.png";
+import alohomoraIcon from "@/assets/alohomora-icon.png";
 
 
-export type SpellEffect = "torch" | "disarm" | "galaxy" | "brew" | "tickle" | "levitate";
+export type SpellEffect = "torch" | "disarm" | "galaxy" | "brew" | "tickle" | "levitate" | "unlock";
 export type SpellCategory = "charm" | "potion";
 
 export interface BrewStep {
@@ -52,7 +53,8 @@ export interface Spell {
 const LUMOS_PATH = "M 22 72 L 50 22 L 78 72";
 const EXPELLIARMUS_PATH = "M 24 24 L 76 24 L 76 76";
 const RICTUSEMPRA_PATH = "M 4 72 " + "C 14 75, 18 69, 21 57 " + "C 24 42, 28 27, 41 19 " + "C 54 11, 74 11, 95 19 " + "C 84 28, 71 36, 58 45 " + "C 52 49, 47 51, 39 51 " + "C 39 45, 40 40, 43 36 " + "C 46 33, 50 31, 54 29";
-const WINGARDIUM_LEVIOSA_PATH = "M 18 18 " + "C 18 45, 30 72, 50 72 " + "C 70 72, 82 48, 82 18 " +  "C 82 35, 82 55, 82 78";
+const WINGARDIUM_LEVIOSA_PATH = "M 18 18 " + "C 18 45, 30 72, 50 72 " + "C 70 72, 82 48, 82 18 " + "C 82 35, 82 55, 82 78";
+const ALOHOMORA_PATH = "M 70 15 " + "C 82 20, 88 35, 82 50 " + "C 76 65, 58 70, 42 62 " + "C 25 54, 18 35, 28 22 " + "C 38 10, 52 12, 52 12 " + "L 52 88";
 
 export const spells: Spell[] = [
   {
@@ -191,6 +193,30 @@ export const spells: Spell[] = [
       "wingardium leviosa",
       "wingardium leviosa please",
       "wingardium leviosaa",
+    ],
+  },
+  {
+    id: "alohomora",
+    name: "Alohomora",
+    pronunciation: "al-oh-ho-MOR-ah",
+    description: "Known as the Thief's Friend, this charm unlocks and opens sealed doors.",
+    category: "charm",
+    wandPath: ALOHOMORA_PATH,
+    movement: "Start from the top right, draw a curved circle counterclockwise, then pull a straight line downward through the center.",
+    effect: "unlock",
+    icon: alohomoraIcon,
+    aliases: [
+      "alohomora",
+      "alo homora",
+      "aloho mora",
+      "alohomora spell",
+      "alohomorah",
+      "alo mora",
+      "alohomorra",
+      "alohomora",
+      "alohamora",
+      "alohomorra",
+      "alo homorra",
     ],
   },
   {
