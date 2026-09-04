@@ -3,7 +3,8 @@ import { Capacitor } from "@capacitor/core";
 import { SpeechRecognition } from "@capacitor-community/speech-recognition";
 
 interface SpeechResultLike {
-  0?: { transcript?: string };
+  length?: number;
+  [index: number]: { transcript?: string } | undefined;
 }
 
 interface RecognitionLike {
@@ -92,8 +93,10 @@ export function useSpeechSpell(onTranscript: (text: string) => void) {
     await clearNativeListeners();
 
     const partialHandle = await SpeechRecognition.addListener("partialResults", ({ matches }) => {
-      const transcript = matches.join(" ").trim();
-      if (transcript) callbackRef.current(transcript);
+      for (const match of matches) {
+        const transcript = match.trim();
+        if (transcript) callbackRef.current(transcript);
+      }
     });
 
     const stateHandle = await SpeechRecognition.addListener("listeningState", ({ status }) => {
@@ -169,14 +172,17 @@ export function useSpeechSpell(onTranscript: (text: string) => void) {
     recognition.lang = "en-US";
     recognition.continuous = true;
     recognition.interimResults = true;
+    (recognition as RecognitionLike & { maxAlternatives?: number }).maxAlternatives = 5;
 
     recognition.onresult = (event) => {
-      let text = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
-        text += ` ${event.results[i]?.[0]?.transcript ?? ""}`;
+        const result = event.results[i];
+        const altCount = result?.length ?? 1;
+        for (let a = 0; a < altCount; a++) {
+          const trimmed = result?.[a]?.transcript?.trim() ?? "";
+          if (trimmed) callbackRef.current(trimmed);
+        }
       }
-      const trimmed = text.trim();
-      if (trimmed) callbackRef.current(trimmed);
     };
 
     recognition.onerror = (event) => {

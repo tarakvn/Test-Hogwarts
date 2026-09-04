@@ -77,7 +77,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       {
         httpEquiv: "Permissions-Policy",
-        content: "camera=(self), microphone=(self), fullscreen=(self)",
+        content:
+          "camera=(self), microphone=(self), fullscreen=(self), accelerometer=(self), gyroscope=(self), magnetometer=(self)",
       },
       { title: "Spellbook — Cast Wizarding Charms" },
       {

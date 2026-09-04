@@ -23,12 +23,16 @@ export interface Spell {
   category: SpellCategory;
   /** SVG path of the wand movement, drawn inside a 0 0 100 100 viewBox */
   wandPath?: string;
+  /** Optional simpler path used to recognize a live wand / gyro stroke */
+  gesturePath?: string;
   /** Human description of the wand movement */
   movement?: string;
   effect: SpellEffect;
   icon: string;
   /** Extra accepted speech transcriptions */
   aliases: string[];
+  /** Each group must appear in the transcript (handles mangled incantations). */
+  speechGroups?: string[][];
   /** Potion-only lore */
   potion?: {
     method: string;
@@ -129,16 +133,30 @@ export const spells: Spell[] = [
       "rictusembra",
       "rictus em pra",
       "rictus emperor",
+      "rectus emperor",
       "rictus empire",
+      "rectus empire",
+      "ridiculous emperor",
+      "ridiculous empire",
       "rictus temper",
       "rictus tempera",
       "rictus semper",
+      "rectus sempra",
       "rick too sempra",
       "rick to sempra",
+      "rick to simpler",
       "rictus and pra",
       "rictus impra",
       "rectus empra",
       "rictus simpler",
+      "rictus umbra",
+      "victus emperor",
+      "rictus emperer",
+      "rictus emperah",
+    ],
+    speechGroups: [
+      ["rictus", "rectus", "ricktus", "riktus", "rictous", "victus", "ridiculous", "rick"],
+      ["sempra", "empra", "emperor", "empire", "semper", "temper", "tempera", "simpler", "impra", "embra", "umbra", "emperer"],
     ],
   },
   {

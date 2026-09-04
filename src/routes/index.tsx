@@ -1,14 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Mic, MicOff } from "lucide-react";
+import { Mic, MicOff, Pencil, WandSparkles } from "lucide-react";
 import spellbookIcon from "@/assets/spellbook-icon.png";
 import { Starfield } from "@/components/Starfield";
 import { WandTrace } from "@/components/WandTrace";
 import { DisarmBurst } from "@/components/DisarmBurst";
 import { RictusempraBurst } from "@/components/RictusempraBurst";
+import { WandStrokeTrail } from "@/components/WandStrokeTrail";
+import { IncantationKeyboard } from "@/components/IncantationKeyboard";
 import { useTorch } from "@/hooks/useTorch";
 import { useSpeechSpell } from "@/hooks/useSpeechSpell";
-import { spells, counterWords, type Spell } from "@/data/spells";
+import { useWandDraw } from "@/hooks/useWandDraw";
+import { findSpell, isCounter } from "@/lib/spellMatch";
+import { getSpell, type Spell } from "@/data/spells";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -31,41 +35,6 @@ export const Route = createFileRoute("/")({
   component: CastPage,
 });
 
-function normalizeSpoken(text: string) {
-  return text
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim()
-    .replace(/\s+/g, " ");
-}
-
-function compactSpoken(text: string) {
-  return normalizeSpoken(text).replace(/\s/g, "");
-}
-
-function spokenIncludes(transcript: string, phrase: string) {
-  const haystack = normalizeSpoken(transcript);
-  const needle = normalizeSpoken(phrase);
-  if (!needle) return false;
-  if (haystack.includes(needle)) return true;
-  const compactNeedle = compactSpoken(phrase);
-  // Short tokens like "nox" stay word-like; longer incantations match without spaces.
-  if (compactNeedle.length < 5) return false;
-  return compactSpoken(transcript).includes(compactNeedle);
-}
-
-function spellPhrases(spell: Spell) {
-  return [spell.name, spell.pronunciation, ...spell.aliases];
-}
-
-function findSpell(transcript: string): Spell | null {
-  return spells.find((spell) => spellPhrases(spell).some((phrase) => spokenIncludes(transcript, phrase))) ?? null;
-}
-
-function isCounter(transcript: string) {
-  return counterWords.some((word) => spokenIncludes(transcript, word));
-}
-
 function buzz(pattern: number | number[]) {
   if (typeof navigator !== "undefined" && "vibrate" in navigator) {
     navigator.vibrate?.(pattern);
@@ -79,8 +48,21 @@ function CastPage() {
   const [disarming, setDisarming] = useState(false);
   const [tickling, setTickling] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [inputMode, setInputMode] = useState<"speech" | "draw">("speech");
   const litRef = useRef(false);
   litRef.current = torch.isOn;
+  const busyRef = useRef(false);
+
+  const beginSpell = useCallback(
+    (spell: Spell) => {
+      if (busyRef.current) return;
+      if (litRef.current) return;
+      busyRef.current = true;
+      setCast(null);
+      setTracing(spell);
+    },
+    [],
+  );
 
   const heard = useCallback(
     (text: string) => {
@@ -92,18 +74,39 @@ function CastPage() {
         return;
       }
       const spell = findSpell(text);
-      if (!spell) {
-        console.log("Unknown spell:", text);
-        return;
-      }
-      if (litRef.current) return;
-      setCast(null);
-      setTracing((current) => current ?? spell);
+      if (!spell) return;
+      if (spell.category !== "charm") return;
+      beginSpell(spell);
     },
-    [torch],
+    [beginSpell, torch],
   );
 
   const speech = useSpeechSpell(heard);
+
+  const wand = useWandDraw(
+    (spellId) => {
+      const spell = getSpell(spellId);
+      if (!spell) return;
+      beginSpell(spell);
+    },
+    inputMode === "draw" && !tracing && !disarming && !tickling,
+  );
+
+  const chooseInputMode = useCallback(
+    (mode: "speech" | "draw") => {
+      setInputMode(mode);
+      if (mode === "speech") {
+        speech.stop();
+        return;
+      }
+      void wand.arm();
+    },
+    [speech, wand],
+  );
+
+  useEffect(() => {
+    busyRef.current = Boolean(tracing || disarming || tickling);
+  }, [tracing, disarming, tickling]);
 
   useEffect(() => {
     if (!tracing) return;
@@ -134,7 +137,6 @@ function CastPage() {
     );
   }, [torch, tracing]);
 
-
   useEffect(() => {
     if (!status) return;
     const id = window.setTimeout(() => setStatus(null), 3500);
@@ -146,6 +148,8 @@ function CastPage() {
   return (
     <main className="relative min-h-screen">
       <Starfield />
+
+      <WandStrokeTrail points={wand.points} live={wand.live} />
 
       {/* Lumos glow lives on this very page — spoken counter-spell puts it out */}
       {lit ? (
@@ -162,7 +166,7 @@ function CastPage() {
       ) : null}
 
       {disarming ? <DisarmBurst onDone={() => setDisarming(false)} /> : null}
-      {tickling ?  <RictusempraBurst onDone={() => setTickling(false)} /> : null}
+      {tickling ? <RictusempraBurst onDone={() => setTickling(false)} /> : null}
 
       {tracing ? (
         <div className="fixed inset-0 z-20 flex flex-col items-center justify-center gap-6 bg-background/85 px-8 backdrop-blur-md">
@@ -178,7 +182,7 @@ function CastPage() {
         </div>
       ) : null}
 
-      <div className="relative z-20 mx-auto flex min-h-screen w-full max-w-md flex-col items-center gap-8 px-5 pt-14 pb-12">
+      <div className="relative z-20 mx-auto flex min-h-screen w-full max-w-md flex-col items-center gap-8 px-5 pt-14 pb-24">
         <header className="animate-rise text-center">
           <p
             className="font-serif text-[0.65rem] tracking-[0.45em] uppercase"
@@ -197,7 +201,8 @@ function CastPage() {
             style={{ color: lit ? "oklch(0.38 0.05 60)" : undefined }}
           >
             <span className={lit ? "" : "text-muted-foreground"}>
-              Hold the mic and say your incantation aloud. The wand movement will draw itself.
+              Say the incantation, sweep the wand through the air, or type it. The charm will draw
+              itself.
             </span>
           </p>
         </header>
@@ -238,22 +243,66 @@ function CastPage() {
           </p>
         ) : null}
 
-        <button
-          type="button"
-          onClick={() => (speech.listening ? speech.stop() : speech.start())}
-          className="flex w-full items-center justify-center gap-3 rounded-full border border-primary/40 bg-card/60 px-6 py-4 font-serif text-sm tracking-[0.2em] text-primary uppercase backdrop-blur transition-transform active:scale-95"
-          style={{ boxShadow: "var(--shadow-glow)" }}
-        >
-          {speech.listening ? (
-            <>
-              <Mic className="h-4 w-4 animate-pulse" /> Listening…
-            </>
+        <div data-no-wand className="flex w-full items-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              if (inputMode !== "speech") {
+                chooseInputMode("speech");
+                return;
+              }
+              if (speech.listening) speech.stop();
+              else void speech.start();
+            }}
+            aria-pressed={inputMode === "speech"}
+            className={`flex min-w-0 flex-1 items-center justify-center gap-3 rounded-full border px-4 py-4 font-serif text-sm tracking-[0.12em] uppercase backdrop-blur transition-transform active:scale-95 ${
+              inputMode === "speech"
+                ? "border-primary/40 bg-card/60 text-primary"
+                : "border-primary/20 bg-card/30 text-muted-foreground"
+            }`}
+            style={inputMode === "speech" ? { boxShadow: "var(--shadow-glow)" } : undefined}
+          >
+            {speech.listening ? (
+              <>
+                <Mic className="h-4 w-4 animate-pulse" /> Listening…
+              </>
+            ) : (
+              <>
+                <Mic className="h-4 w-4" /> Speak
+              </>
+            )}
+          </button>
+          {inputMode === "speech" ? (
+            <button
+              type="button"
+              onClick={() => chooseInputMode("draw")}
+              aria-label="Draw the wand movement"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-card/60 text-primary backdrop-blur transition-transform active:scale-95"
+              style={{ boxShadow: "var(--shadow-glow)" }}
+            >
+              <Pencil className="h-5 w-5" />
+            </button>
           ) : (
-            <>
-              <Mic className="h-4 w-4" /> Speak the incantation
-            </>
+            <button
+              type="button"
+              onClick={() => chooseInputMode("speech")}
+              aria-label="Speak the incantation"
+              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-card/60 text-primary backdrop-blur transition-transform active:scale-95"
+              style={{ boxShadow: "var(--shadow-glow)" }}
+            >
+              <Mic className="h-5 w-5" />
+            </button>
           )}
-        </button>
+        </div>
+
+        {inputMode === "draw" ? (
+          <p className="flex items-center justify-center gap-2 text-center font-sans text-sm text-muted-foreground">
+            <WandSparkles className="h-4 w-4 text-primary" />
+            {wand.sensorReady
+              ? "Move your wand to draw the movement."
+              : "Move your finger, or allow motion access to use your wand."}
+          </p>
+        ) : null}
 
         {!speech.supported ? (
           <p className="flex items-center justify-center gap-2 font-sans text-sm text-muted-foreground">
@@ -291,6 +340,8 @@ function CastPage() {
           />
         </Link>
       </div>
+
+      <IncantationKeyboard onCast={heard} disabled={Boolean(tracing)} />
     </main>
   );
 }
