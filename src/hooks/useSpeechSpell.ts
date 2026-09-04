@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Media } from '@capacitor-community/media';
+import { Capacitor } from '@capacitor/core';
 
 interface SpeechResultLike {
   0?: { transcript?: string };
@@ -56,12 +58,15 @@ export function useSpeechSpell(onTranscript: (text: string) => void) {
       setSupported(false);
       return;
     }
+
     setError(null);
     wantedRef.current = true;
+
     const recognition = new Ctor();
     recognition.lang = "en-US";
     recognition.continuous = true;
     recognition.interimResults = true;
+
     recognition.onresult = (event) => {
       let text = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -70,6 +75,7 @@ export function useSpeechSpell(onTranscript: (text: string) => void) {
       const trimmed = text.trim();
       if (trimmed) callbackRef.current(trimmed);
     };
+
     recognition.onerror = (event) => {
       setError(event.error ?? "speech-error");
       if (event.error === "not-allowed" || event.error === "service-not-allowed") {
@@ -77,6 +83,7 @@ export function useSpeechSpell(onTranscript: (text: string) => void) {
         setListening(false);
       }
     };
+
     recognition.onend = () => {
       // keep the ear open so a counter-spell can be heard on the same screen
       if (wantedRef.current && recognitionRef.current === recognition) {
@@ -89,12 +96,26 @@ export function useSpeechSpell(onTranscript: (text: string) => void) {
       }
       setListening(false);
     };
+
     recognitionRef.current = recognition;
+
     try {
+      // Request runtime microphone permission on Android
+      if (Capacitor.getPlatform() === "android") {
+        const permission = await Media.requestPermissions();
+        if (permission.microphone !== "granted") {
+          console.log("Microphone permission denied");
+          setError("not-allowed");
+          setListening(false);
+          wantedRef.current = false;
+          return;
+        }
+      }
+
+      // Still call getUserMedia to force the permission prompt / verify mic works
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: true,
       });
-
       stream.getTracks().forEach((track) => track.stop());
 
       setTimeout(() => {
@@ -103,12 +124,14 @@ export function useSpeechSpell(onTranscript: (text: string) => void) {
           setListening(true);
         } catch (err) {
           console.log("recognition start error:", err);
+          setListening(false);
         }
-      }, 200);
-
+      }, 250);
     } catch (err) {
       console.log("mic permission error:", err);
+      setError("not-allowed");
       setListening(false);
+      wantedRef.current = false;
     }
   }, []);
 
