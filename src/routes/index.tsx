@@ -8,6 +8,7 @@ import { DisarmBurst } from "@/components/DisarmBurst";
 import { RictusempraBurst } from "@/components/RictusempraBurst";
 import { WingardiumLeviosaBurst } from "@/components/WingardiumLeviosaBurst";
 import { AlohomoraBurst } from "@/components/AlohomoraBurst";
+import { FlipendoBurst } from "@/components/FlipendoBurst";
 import { WandStrokeTrail } from "@/components/WandStrokeTrail";
 import { IncantationKeyboard } from "@/components/IncantationKeyboard";
 import { useTorch } from "@/hooks/useTorch";
@@ -51,6 +52,7 @@ function CastPage() {
   const [tickling, setTickling] = useState(false);
   const [levitating, setLevitating] = useState(false);
   const [unlocking, setUnlocking] = useState(false);
+  const [flipping, setFlipping] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [inputMode, setInputMode] = useState<"speech" | "draw">("speech");
   const litRef = useRef(false);
@@ -147,6 +149,13 @@ function CastPage() {
       setStatus("Alohomora! The lock opens.");
       return;
     }
+    if (spell.effect === "flipendo") {
+      setFlipping(true);
+      buzz([40, 80, 40, 120]);
+      setStatus("Flipendo! The target is blasted backward.");
+      return;
+    }
+
     const mode = await torch.start();
     setStatus(
       mode === "hardware" ? "Wand tip alight — real flame kindled." : "Wandlight fills the screen.",
@@ -185,6 +194,7 @@ function CastPage() {
       {tickling ? <RictusempraBurst onDone={() => setTickling(false)} /> : null}
       {levitating ? <WingardiumLeviosaBurst onDone={() => setLevitating(false)} /> : null}
       {unlocking ? <AlohomoraBurst open /> : null}
+      {flipping ? <FlipendoBurst onDone={() => setFlipping(false)} /> : null}
 
       {tracing ? (
         <div className="fixed inset-0 z-20 flex flex-col items-center justify-center gap-6 bg-background/85 px-8 backdrop-blur-md">
@@ -273,11 +283,10 @@ function CastPage() {
               else void speech.start();
             }}
             aria-pressed={inputMode === "speech"}
-            className={`flex min-w-0 flex-1 items-center justify-center gap-3 rounded-full border px-4 py-4 font-serif text-sm tracking-[0.12em] uppercase backdrop-blur transition-transform active:scale-95 ${
-              inputMode === "speech"
+            className={`flex min-w-0 flex-1 items-center justify-center gap-3 rounded-full border px-4 py-4 font-serif text-sm tracking-[0.12em] uppercase backdrop-blur transition-transform active:scale-95 ${inputMode === "speech"
                 ? "border-primary/40 bg-card/60 text-primary"
                 : "border-primary/20 bg-card/30 text-muted-foreground"
-            }`}
+              }`}
             style={inputMode === "speech" ? { boxShadow: "var(--shadow-glow)" } : undefined}
           >
             {speech.listening ? (
