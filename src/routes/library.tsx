@@ -12,7 +12,7 @@ import {
   type LibrarySubject,
 } from "@/data/spells";
 import { LanguageToggle } from "@/components/LanguageToggle";
-import { translate, usePersianLanguage } from "@/lib/language";
+import { localizeSpell, localizeSubjectBlurb, translate, usePersianLanguage } from "@/lib/language";
 
 export const Route = createFileRoute("/library")({
   head: () => ({
@@ -86,7 +86,7 @@ function LibraryPage() {
               </div>
               <button
                 type="button"
-                aria-label={searching ? "Close search" : "Search the spellbook"}
+                aria-label={translate(searching ? "Close search" : "Search the spellbook", persian)}
                 onClick={() => {
                   setSearching((s) => !s);
                   if (searching) setQuery("");
@@ -103,7 +103,7 @@ function LibraryPage() {
                 autoFocus
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search by name, effect, ingredient…"
+                placeholder={translate("Search by name, effect, ingredient…", persian)}
                 className="animate-rise mt-4 w-full rounded-xl border border-primary/30 bg-background/50 px-4 py-2.5 font-sans text-base text-foreground placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none"
               />
             ) : null}
@@ -135,8 +135,8 @@ function LibraryPage() {
             <div className="animate-rise rounded-b-2xl rounded-tr-2xl border border-primary/25 bg-background/40 p-4">
               <p className="font-sans text-sm text-muted-foreground italic">
                 {query.trim()
-                  ? `${entries.length} ${entries.length === 1 ? "entry" : "entries"} found for “${query.trim()}”`
-                  : active.blurb}
+                  ? `${entries.length} ${translate(entries.length === 1 ? "entry" : "entries", persian)} ${translate("found for", persian)} “${query.trim()}”`
+                  : localizeSubjectBlurb(active.id, active.blurb, persian)}
               </p>
 
               {entries.length ? (
@@ -147,13 +147,13 @@ function LibraryPage() {
                 </ul>
               ) : (
                 <p className="mt-8 text-center font-serif text-xs tracking-[0.3em] text-muted-foreground uppercase">
-                  {query.trim() ? "Nothing written of that" : "These pages are still blank"}
+                  {translate(query.trim() ? "Nothing written of that" : "These pages are still blank", persian)}
                 </p>
               )}
             </div>
 
             <p className="mt-6 text-center font-serif text-[0.55rem] tracking-[0.4em] text-muted-foreground uppercase">
-              More entries to be inscribed
+              {translate("More entries to be inscribed", persian)}
             </p>
           </div>
         </div>
@@ -164,6 +164,8 @@ function LibraryPage() {
 
 function SpellEntry({ spell }: { spell: Spell }) {
   const [open, setOpen] = useState(false);
+  const persian = usePersianLanguage();
+  const localized = localizeSpell(spell, persian);
 
   return (
     <li className="overflow-hidden rounded-2xl border border-primary/15 bg-card/30">
@@ -182,7 +184,7 @@ function SpellEntry({ spell }: { spell: Spell }) {
         <span className="flex-1">
           <span className="block font-serif text-xl text-primary">{spell.name}</span>
           <span className="mt-1 block font-sans text-sm text-foreground/85">
-            {spell.description}
+            {localized.description}
           </span>
         </span>
         <ChevronDown
@@ -202,12 +204,12 @@ function SpellEntry({ spell }: { spell: Spell }) {
                 <WandTrace spell={spell} duration={2400} loop />
               </div>
               <p className="mt-2 text-center font-sans text-xs text-muted-foreground">
-                Wand movement: {spell.movement}
+                {translate("Wand movement", persian)}: {localized.movement}
               </p>
             </>
           ) : null}
 
-          {spell.potion ? <PotionPages spell={spell} /> : null}
+          {localized.potion ? <PotionPages spell={localized} /> : null}
         </div>
       ) : null}
     </li>
@@ -217,6 +219,7 @@ function SpellEntry({ spell }: { spell: Spell }) {
 function PotionPages({ spell }: { spell: Spell }) {
   const potion = spell.potion!;
   const [view, setView] = useState<"recipe" | "brew">("recipe");
+  const persian = usePersianLanguage();
 
   return (
     <div className="mt-3">
@@ -231,7 +234,7 @@ function PotionPages({ spell }: { spell: Spell }) {
                 : "border-primary/15 bg-background/30 text-muted-foreground"
               }`}
           >
-            {v === "recipe" ? "Recipe scroll" : "Brew it"}
+            {translate(v === "recipe" ? "Recipe scroll" : "Brew it", persian)}
           </button>
         ))}
       </div>
@@ -247,31 +250,31 @@ function PotionPages({ spell }: { spell: Spell }) {
         >
           <p className="font-sans text-base text-foreground/90 italic">{potion.method}</p>
           <h3 className="mt-5 font-serif text-[0.6rem] tracking-[0.4em] text-primary/70 uppercase">
-            Uses
+            {translate("Uses", persian)}
           </h3>
           <h3 className="mt-2 list-disc space-y-1 pl-5 font-sans text-sm text-foreground/90">
             {potion.uses}
           </h3>
           <h3 className="mt-5 font-serif text-[0.6rem] tracking-[0.4em] text-primary/70 uppercase">
-            Dangers
+            {translate("Dangers", persian)}
           </h3>
           <h3 className="mt-2 list-disc space-y-1 pl-5 font-sans text-sm text-foreground/90">
             {potion.dangers}
           </h3>
           <h3 className="mt-5 font-serif text-[0.6rem] tracking-[0.4em] text-primary/70 uppercase">
-            Characteristics
+            {translate("Characteristics", persian)}
           </h3>
           <h3 className="mt-2 list-disc space-y-1 pl-5 font-sans text-sm text-foreground/90">
             {potion.characteristics}
           </h3>
           <h3 className="mt-5 font-serif text-[0.6rem] tracking-[0.4em] text-primary/70 uppercase">
-            Difficulty
+            {translate("Difficulty", persian)}
           </h3>
           <h3 className="mt-2 list-disc space-y-1 pl-5 font-sans text-sm text-foreground/90">
             {potion.difficulty}
           </h3>
           <h3 className="mt-5 font-serif text-[0.6rem] tracking-[0.4em] text-primary/70 uppercase">
-            Known ingredients
+            {translate("Known ingredients", persian)}
           </h3>
           <ul className="mt-2 list-disc space-y-1 pl-5 font-sans text-sm text-foreground/90">
             {potion.ingredients.map((item) => (
@@ -280,7 +283,7 @@ function PotionPages({ spell }: { spell: Spell }) {
           </ul>
 
           <h3 className="mt-5 font-serif text-[0.6rem] tracking-[0.4em] text-primary/70 uppercase">
-            Brewing instructions
+            {translate("Brewing instructions", persian)}
           </h3>
           <ol className="mt-2 list-decimal space-y-1 pl-5 font-sans text-sm text-foreground/90">
             {potion.instructions.map((item) => (

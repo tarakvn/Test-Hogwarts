@@ -1,7 +1,8 @@
 import { useMemo, useState } from "react";
 import { Check, RotateCcw, Sparkles } from "lucide-react";
 import snapeImg from "@/assets/potions-master.png";
-import { snapeGrumbles, type Spell } from "@/data/spells";
+import { snapeGrumbles, type BrewStep, type Spell } from "@/data/spells";
+import { translate, usePersianLanguage } from "@/lib/language";
 
 function shuffle<T>(items: T[], seed: number): T[] {
   const out = [...items];
@@ -18,7 +19,18 @@ function shuffle<T>(items: T[], seed: number): T[] {
 
 /** A tiny brewing bench: pick each step in the right order or Snape appears. */
 export function PotionBrew({ spell }: { spell: Spell }) {
-  const steps = spell.potion?.steps ?? [];
+  const persian = usePersianLanguage();
+  const steps = useMemo<BrewStep[]>(() => {
+    const source = spell.potion?.steps ?? [];
+    if (!persian || spell.id !== "wiggenweld" || !spell.potion?.instructions.length) {
+      return source;
+    }
+    return spell.potion.instructions.map((instruction, i) => ({
+      prompt: `مرحله ${i + 1}: حرکت درست را انتخاب کنید.`,
+      answer: instruction,
+      decoys: ["این کار را انجام ندهید", "گزینه نادرست دیگری را انتخاب کنید"],
+    }));
+  }, [persian, spell]);
   const [index, setIndex] = useState(0);
   const [mistake, setMistake] = useState<string | null>(null);
   const [done, setDone] = useState(false);
@@ -54,7 +66,7 @@ export function PotionBrew({ spell }: { spell: Spell }) {
   return (
     <div className="rounded-2xl border border-primary/25 bg-background/50 p-4">
       <p className="font-serif text-[0.6rem] tracking-[0.4em] text-primary/70 uppercase">
-        Brewing bench
+        {translate("Brewing bench", persian)}
       </p>
 
       {done ? (
@@ -69,18 +81,20 @@ export function PotionBrew({ spell }: { spell: Spell }) {
               filter: "blur(2px)",
             }}
           />
-          <p className="mt-3 font-serif text-xl text-primary text-glow">The potion is complete</p>
+          <p className="mt-3 font-serif text-xl text-primary text-glow">
+            {translate("The potion is complete", persian)}
+          </p>
           <p className="mt-1 font-sans text-sm text-muted-foreground italic">
             {spell.id === "wiggenweld"
-              ? "Turquoise light shimmers above the cauldron — full marks."
-              : "Pink smoke curls from the cauldron — full marks."}
+              ? translate("Turquoise light shimmers above the cauldron — full marks.", persian)
+              : translate("Pink smoke curls from the cauldron — full marks.", persian)}
           </p>
           <button
             type="button"
             onClick={reset}
             className="mt-4 inline-flex items-center gap-2 rounded-full border border-primary/40 px-4 py-2 font-serif text-xs tracking-[0.25em] text-primary uppercase"
           >
-            <RotateCcw className="h-3.5 w-3.5" /> Brew again
+            <RotateCcw className="h-3.5 w-3.5" /> {translate("Brew again", persian)}
           </button>
         </div>
       ) : (
@@ -110,11 +124,11 @@ export function PotionBrew({ spell }: { spell: Spell }) {
           <p className="mt-2 flex items-center gap-2 font-sans text-xs text-muted-foreground">
             {index === 0 ? (
               <>
-                <Sparkles className="h-3.5 w-3.5" /> Step 1 of {steps.length}
+                <Sparkles className="h-3.5 w-3.5" /> {persian ? "مرحله ۱ از" : "Step 1 of"} {steps.length}
               </>
             ) : (
               <>
-                <Check className="h-3.5 w-3.5" /> Step {index + 1} of {steps.length}
+                <Check className="h-3.5 w-3.5" /> {persian ? `مرحله ${index + 1} از` : `Step ${index + 1} of`} {steps.length}
               </>
             )}
           </p>
@@ -126,7 +140,7 @@ export function PotionBrew({ spell }: { spell: Spell }) {
           <div className="animate-rise w-full max-w-sm text-center">
             <img
               src={snapeImg}
-              alt="The Potions Master, unimpressed"
+              alt={persian ? "استاد معجون‌سازی ناراضی است" : "The Potions Master, unimpressed"}
               width={768}
               height={1024}
               loading="lazy"
@@ -138,7 +152,7 @@ export function PotionBrew({ spell }: { spell: Spell }) {
               onClick={() => setMistake(null)}
               className="mt-4 rounded-full border border-primary/40 px-5 py-2 font-serif text-xs tracking-[0.25em] text-primary uppercase"
             >
-              Try again
+              {translate("Try again", persian)}
             </button>
           </div>
         </div>
