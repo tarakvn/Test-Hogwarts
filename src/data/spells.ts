@@ -83,6 +83,50 @@ export interface Spell {
   };
 }
 
+/** Persian text that can be customized per charm or potion without changing its name. */
+export interface PersianSpellTranslation {
+  description?: string;
+  movement?: string;
+  difficulty?: string;
+}
+
+export const persianSpellTranslations: Record<string, PersianSpellTranslation> = {
+  lumos: {
+    description: "از نوک چوبدستی جادوگر روشنایی ایجاد می‌کند.",
+    movement: "یک V رو به بالا، مانند مثلثی بدون ضلع پایینی.",
+  },
+  expelliarmus: {
+    description: "افسون محبوب دوئل‌گران که چوبدستی حریف را از او می‌گیرد.",
+    movement: "از بالا سمت چپ شروع کنید، به طرفین بکشید و سپس به پایین بروید.",
+  },
+  rictusempra: {
+    description: "برای قلقلک دادن هر کسی در مسیر، دوست یا دشمن، عالی است.",
+    movement: "از چپ شروع کنید، با قوسی به بالا بروید، به راست ادامه دهید و سپس به پایین برگردید.",
+  },
+  "wingardium-leviosa": {
+    description: "حرکت «گار» را کشیده و زیبا ادا کنید.",
+    movement: "از بالا سمت چپ شروع کنید، با قوسی نرم پایین بیایید، به راست بالا بروید و با ضربه‌ای آرام تمام کنید.",
+  },
+  alohomora: {
+    description: "این افسون که دوست دزدها نامیده می‌شود، درهای بسته را باز می‌کند.",
+    movement: "از بالا سمت راست شروع کنید، دایره‌ای خمیده خلاف جهت عقربه‌های ساعت بکشید و خطی مستقیم از مرکز به پایین بکشید.",
+  },
+  flipendo: {
+    description: "به‌سادگی هدف جادوگر را به عقب پرتاب می‌کند.",
+    movement: "از چپ شروع کنید، برای ساختن نوکی تیز پایین بروید، سپس به بالا خم شوید و با قلابی کوچک به راست پایان دهید.",
+  },
+  nox: {
+    description: "نور انتهای چوبدستی جادوگر را خاموش می‌کند.",
+    movement: "از پایین سمت چپ شروع کنید، با قوسی خمیده بالا بروید، به داخل خم شوید و به سمت راست پایان دهید.",
+  },
+  "cure-for-boils": {
+    difficulty: "سطح دم کردن: مقدماتی. این معجون برای جادوگران تازه‌کار مناسب است.",
+  },
+  wiggenweld: {
+    difficulty: "سطح دم کردن: پیشرفته. برای آماده‌سازی این معجون به دقت و صبر زیادی نیاز است.",
+  },
+};
+
 const LUMOS_PATH = "M 22 72 L 50 22 L 78 72";
 const EXPELLIARMUS_PATH = "M 24 24 L 76 24 L 76 76";
 const RICTUSEMPRA_PATH = "M 4 72 " + "C 14 75, 18 69, 21 57 " + "C 24 42, 28 27, 41 19 " + "C 54 11, 74 11, 95 19 " + "C 84 28, 71 36, 58 45 " + "C 52 49, 47 51, 39 51 " + "C 39 45, 40 40, 43 36 " + "C 46 33, 50 31, 54 29";
