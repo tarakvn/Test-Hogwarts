@@ -70,13 +70,17 @@ function CastPage() {
     [],
   );
 
+  const castNox = useCallback(() => {
+    torch.stop();
+    setCast(null);
+    setStatus("Nox. The light fades.");
+    buzz(40);
+  }, [torch]);
+
   const heard = useCallback(
     (text: string) => {
-      if (litRef.current && isCounter(text)) {
-        torch.stop();
-        setCast(null);
-        setStatus("Nox. The light fades.");
-        buzz(40);
+      if (isCounter(text)) {
+        castNox();
         return;
       }
       const spell = findSpell(text);
@@ -84,7 +88,7 @@ function CastPage() {
       if (spell.category !== "charm") return;
       beginSpell(spell);
     },
-    [beginSpell, torch],
+    [beginSpell, castNox],
   );
 
   const speech = useSpeechSpell(heard);
@@ -93,9 +97,19 @@ function CastPage() {
     (spellId) => {
       const spell = getSpell(spellId);
       if (!spell) return;
+      if (spell.id === "nox") {
+        castNox();
+        return;
+      }
       beginSpell(spell);
     },
-    inputMode === "draw" && !tracing && !disarming && !tickling && !levitating && !unlocking,
+    inputMode === "draw" &&
+      !tracing &&
+      !disarming &&
+      !tickling &&
+      !levitating &&
+      !unlocking &&
+      !flipping,
   );
 
   const chooseInputMode = useCallback(

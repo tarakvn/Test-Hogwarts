@@ -5,6 +5,7 @@ import rictusempraIcon from "@/assets/rictusempra-icon.png";
 import wingardiumleviosaIcon from "@/assets/wingardium-leviosa-icon.png";
 import alohomoraIcon from "@/assets/alohomora-icon.png";
 import flipendoIcon from "@/assets/flipendo-icon.png";
+import noxIcon from "@/assets/nox-icon.png";
 
 
 export type SpellEffect = "torch" | "disarm" | "galaxy" | "brew" | "tickle" | "levitate" | "unlock" | "flipendo";
@@ -57,6 +58,7 @@ const RICTUSEMPRA_PATH = "M 4 72 " + "C 14 75, 18 69, 21 57 " + "C 24 42, 28 27,
 const WINGARDIUM_LEVIOSA_PATH = "M 18 18 " + "C 18 45, 30 72, 50 72 " + "C 70 72, 82 48, 82 18 " + "C 82 35, 82 55, 82 78";
 const ALOHOMORA_PATH = "M 70 15 " + "C 82 20, 88 35, 82 50 " + "C 76 65, 58 70, 42 62 " + "C 25 54, 18 35, 28 22 " + "C 38 10, 52 12, 52 12 " + "L 52 88";
 const FLIPENDO_PATH = "M 20 40 " + "L 30 52 " + "C 35 42, 42 27, 48 18 " + "C 52 12, 57 14, 60 20 " + "C 63 26, 68 25, 73 22 " + "C 77 20, 80 16, 80 12";
+const NOX_PATH = "M 14 70 " + "C 18 58, 22 42, 30 30" + "C 40 20, 48 15, 58 17" + "C 68 22, 78 29, 84 34" + "C 76 33, 68 31, 62 33" + "C 53 36, 49 44, 53 53" + "C 57 63, 69 70, 84 70";
 
 export const spells: Spell[] = [
   {
@@ -244,6 +246,28 @@ export const spells: Spell[] = [
       "flippin do",
       "felipendo",
       "feli pendo",
+    ],
+  },
+  {
+    id: "nox",
+    name: "Nox",
+    pronunciation: "NOCKS",
+    description: "Extinguishes the light at the end of the caster's wand",
+    category: "charm",
+    wandPath: NOX_PATH,
+    movement: "Start from the lower left, sweep upward in a curved arc, then bend inward and finish toward the right.",
+    effect: "torch",
+    icon: noxIcon,
+    aliases: [
+      "nox",
+      "nocks",
+      "knox",
+      "noks",
+      "nox spell",
+      "nox charm",
+      "nocks spell",
+      "nock",
+      "noxx",
     ],
   },
   {
