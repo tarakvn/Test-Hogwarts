@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { LANGUAGE_EVENT } from "@/lib/language";
 
 const STORAGE_KEY = "spellbook-language";
 
@@ -9,7 +10,6 @@ export function LanguageToggle() {
     const saved = window.localStorage.getItem(STORAGE_KEY) === "fa";
     setPersian(saved);
     document.documentElement.lang = saved ? "fa" : "en";
-    document.documentElement.dir = saved ? "rtl" : "ltr";
   }, []);
 
   const toggle = () => {
@@ -17,7 +17,7 @@ export function LanguageToggle() {
     setPersian(next);
     window.localStorage.setItem(STORAGE_KEY, next ? "fa" : "en");
     document.documentElement.lang = next ? "fa" : "en";
-    document.documentElement.dir = next ? "rtl" : "ltr";
+    window.dispatchEvent(new Event(LANGUAGE_EVENT));
   };
 
   return (

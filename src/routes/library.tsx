@@ -12,6 +12,7 @@ import {
   type LibrarySubject,
 } from "@/data/spells";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { translate, usePersianLanguage } from "@/lib/language";
 
 export const Route = createFileRoute("/library")({
   head: () => ({
@@ -35,9 +36,10 @@ export const Route = createFileRoute("/library")({
 });
 
 function LibraryPage() {
-  const [tab, setTab] = useState<LibrarySubject>("charms");
+  const [tab, setTab] = useState<LibrarySubject>("potions");
   const [searching, setSearching] = useState(false);
   const [query, setQuery] = useState("");
+  const persian = usePersianLanguage();
   const active = librarySubjects.find((c) => c.id === tab)!;
   const results = searchSpells(query);
   const entries = query.trim()
@@ -53,7 +55,7 @@ function LibraryPage() {
           to="/"
           className="flex items-center gap-2 font-serif text-xs tracking-[0.3em] text-muted-foreground uppercase transition-colors hover:text-primary"
         >
-          <ArrowLeft className="h-4 w-4" /> Cast
+          <ArrowLeft className="h-4 w-4" /> {translate("Cast", persian)}
         </Link>
 
         {/* Book */}
@@ -108,7 +110,7 @@ function LibraryPage() {
 
             {/* tabs / bookmarks */}
             {query.trim() ? null : (
-              <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <div className="mt-6 flex gap-2 overflow-x-auto pb-2">
                 {librarySubjects.map((c) => {
                   const on = c.id === tab;
                   return (
@@ -116,13 +118,13 @@ function LibraryPage() {
                       key={c.id}
                       type="button"
                       onClick={() => setTab(c.id)}
-                      className={`rounded-xl border px-3 py-2 text-left font-serif text-[0.65rem] tracking-[0.12em] uppercase transition-colors ${on
+                      className={`min-w-max rounded-xl border px-3 py-2 text-left font-serif text-[0.65rem] tracking-[0.12em] uppercase transition-colors ${on
                           ? "border-primary/50 bg-card/70 text-primary"
                           : "border-primary/15 bg-background/30 text-muted-foreground"
                         }`}
                       style={on ? { boxShadow: "var(--shadow-glow)" } : undefined}
                     >
-                      {c.label}
+                      {translate(c.label, persian)}
                     </button>
                   );
                 })}

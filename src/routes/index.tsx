@@ -12,6 +12,7 @@ import { FlipendoBurst } from "@/components/FlipendoBurst";
 import { WandStrokeTrail } from "@/components/WandStrokeTrail";
 import { IncantationKeyboard } from "@/components/IncantationKeyboard";
 import { LanguageToggle } from "@/components/LanguageToggle";
+import { translate, usePersianLanguage } from "@/lib/language";
 import { useTorch } from "@/hooks/useTorch";
 import { useSpeechSpell } from "@/hooks/useSpeechSpell";
 import { useWandDraw } from "@/hooks/useWandDraw";
@@ -56,6 +57,7 @@ function CastPage() {
   const [flipping, setFlipping] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [inputMode, setInputMode] = useState<"speech" | "draw">("speech");
+  const persian = usePersianLanguage();
   const litRef = useRef(false);
   litRef.current = torch.isOn;
   const busyRef = useRef(false);
@@ -323,7 +325,7 @@ function CastPage() {
               </>
             ) : (
               <>
-                <Mic className="h-4 w-4" /> Speak
+                <Mic className="h-4 w-4" /> {translate("Speak", persian)}
               </>
             )}
           </button>
@@ -331,7 +333,7 @@ function CastPage() {
             <button
               type="button"
               onClick={() => chooseInputMode("draw")}
-              aria-label="Draw the wand movement"
+              aria-label={translate("Draw the wand movement", persian)}
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-primary/40 bg-card/60 text-primary backdrop-blur transition-transform active:scale-95"
               style={{ boxShadow: "var(--shadow-glow)" }}
             >
@@ -354,9 +356,12 @@ function CastPage() {
         {inputMode === "draw" ? (
           <p className="flex items-center justify-center gap-2 text-center font-sans text-sm text-muted-foreground">
             <WandSparkles className="h-4 w-4 text-primary" />
-            {wand.sensorReady
-              ? "Move your wand to draw the movement."
-              : "Move your finger, or allow motion access to use your wand."}
+            {translate(
+              wand.sensorReady
+                ? "Move your wand to draw the movement."
+                : "Move your finger, or allow motion access to use your wand.",
+              persian,
+            )}
           </p>
         ) : null}
 

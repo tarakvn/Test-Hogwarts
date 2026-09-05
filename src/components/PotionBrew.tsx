@@ -63,13 +63,17 @@ export function PotionBrew({ spell }: { spell: Spell }) {
             className="mx-auto h-24 w-24 rounded-full"
             style={{
               background:
-                "radial-gradient(circle, oklch(0.85 0.12 350 / 75%), oklch(0.45 0.15 295 / 35%) 60%, transparent 72%)",
+                spell.id === "wiggenweld"
+                  ? "radial-gradient(circle, oklch(0.86 0.16 190 / 85%), oklch(0.48 0.16 205 / 40%) 60%, transparent 72%)"
+                  : "radial-gradient(circle, oklch(0.85 0.12 350 / 75%), oklch(0.45 0.15 295 / 35%) 60%, transparent 72%)",
               filter: "blur(2px)",
             }}
           />
           <p className="mt-3 font-serif text-xl text-primary text-glow">The potion is complete</p>
           <p className="mt-1 font-sans text-sm text-muted-foreground italic">
-            Pink smoke curls from the cauldron — full marks.
+            {spell.id === "wiggenweld"
+              ? "Turquoise light shimmers above the cauldron — full marks."
+              : "Pink smoke curls from the cauldron — full marks."}
           </p>
           <button
             type="button"

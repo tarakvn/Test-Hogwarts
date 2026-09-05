@@ -64,10 +64,10 @@ export function IncantationKeyboard({ onCast, disabled }: Props) {
         aria-label={open ? "Close keyboard" : "Type an incantation"}
         aria-expanded={open}
         onClick={() => setOpen((current) => !current)}
-        className="flex h-14 w-14 items-center justify-center rounded-full border border-primary/40 bg-card/90 text-primary backdrop-blur transition-transform active:scale-95"
+        className="flex h-12 w-12 items-center justify-center rounded-full border border-primary/40 bg-card/90 text-primary backdrop-blur transition-transform active:scale-95"
         style={{ boxShadow: "var(--shadow-glow)" }}
       >
-        <Keyboard className="h-6 w-6" />
+        <Keyboard className="h-5 w-5" />
       </button>
     </div>
   );
