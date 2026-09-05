@@ -72,8 +72,12 @@ function CastPage() {
 
   const castNox = useCallback(() => {
     torch.stop();
+    const nox = getSpell("nox");
+    if (!nox || busyRef.current) return;
+    busyRef.current = true;
     setCast(null);
-    setStatus("Nox. The light fades.");
+    setStatus(null);
+    setTracing(nox);
     buzz(40);
   }, [torch]);
 
@@ -86,6 +90,10 @@ function CastPage() {
       const spell = findSpell(text);
       if (!spell) return;
       if (spell.category !== "charm") return;
+      if (spell.id === "nox") {
+        castNox();
+        return;
+      }
       beginSpell(spell);
     },
     [beginSpell, castNox],
@@ -167,6 +175,10 @@ function CastPage() {
       setFlipping(true);
       buzz([40, 80, 40, 120]);
       setStatus("Flipendo! The target is blasted backward.");
+      return;
+    }
+    if (spell.id === "nox") {
+      setStatus("Nox. The light fades.");
       return;
     }
 
