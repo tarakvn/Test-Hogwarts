@@ -6,11 +6,12 @@ import { WandTrace } from "@/components/WandTrace";
 import { PotionBrew } from "@/components/PotionBrew";
 import {
   spells,
-  categories,
+  librarySubjects,
   searchSpells,
   type Spell,
-  type SpellCategory,
+  type LibrarySubject,
 } from "@/data/spells";
+import { LanguageToggle } from "@/components/LanguageToggle";
 
 export const Route = createFileRoute("/library")({
   head: () => ({
@@ -34,16 +35,19 @@ export const Route = createFileRoute("/library")({
 });
 
 function LibraryPage() {
-  const [tab, setTab] = useState<SpellCategory>("charm");
+  const [tab, setTab] = useState<LibrarySubject>("charms");
   const [searching, setSearching] = useState(false);
   const [query, setQuery] = useState("");
-  const active = categories.find((c) => c.id === tab)!;
+  const active = librarySubjects.find((c) => c.id === tab)!;
   const results = searchSpells(query);
-  const entries = query.trim() ? results : spells.filter((s) => s.category === tab);
+  const entries = query.trim()
+    ? results
+    : spells.filter((s) => (s.subject ?? (s.category === "potion" ? "potions" : "charms")) === tab);
 
   return (
     <main className="relative min-h-screen">
       <Starfield density={50} />
+      <LanguageToggle />
       <div className="relative mx-auto w-full max-w-2xl px-4 pt-8 pb-14">
         <Link
           to="/"
@@ -104,15 +108,15 @@ function LibraryPage() {
 
             {/* tabs / bookmarks */}
             {query.trim() ? null : (
-              <div className="mt-6 flex gap-2">
-                {categories.map((c) => {
+              <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                {librarySubjects.map((c) => {
                   const on = c.id === tab;
                   return (
                     <button
                       key={c.id}
                       type="button"
                       onClick={() => setTab(c.id)}
-                      className={`rounded-t-xl border px-4 py-2 font-serif text-[0.7rem] tracking-[0.25em] uppercase transition-colors ${on
+                      className={`rounded-xl border px-3 py-2 text-left font-serif text-[0.65rem] tracking-[0.12em] uppercase transition-colors ${on
                           ? "border-primary/50 bg-card/70 text-primary"
                           : "border-primary/15 bg-background/30 text-muted-foreground"
                         }`}

@@ -27,11 +27,11 @@ export function IncantationKeyboard({ onCast, disabled }: Props) {
   };
 
   return (
-    <div data-no-wand className="fixed right-4 bottom-4 z-40 flex flex-col items-end gap-2">
+    <div data-no-wand className="relative z-40 flex flex-col items-end gap-2">
       {open ? (
         <form
           onSubmit={submit}
-          className="w-[min(18rem,calc(100vw-2rem))] rounded-2xl border border-primary/35 bg-card/95 p-3 shadow-lg backdrop-blur"
+          className="absolute right-0 bottom-full mb-2 w-[min(18rem,calc(100vw-2rem))] rounded-2xl border border-primary/35 bg-card/95 p-3 shadow-lg backdrop-blur"
           style={{ boxShadow: "var(--shadow-arcane)" }}
         >
           <label htmlFor="incantation-type" className="sr-only">

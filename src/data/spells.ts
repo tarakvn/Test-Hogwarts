@@ -1,15 +1,45 @@
+//spells
 import lumosIcon from "@/assets/lumos-icon.png";
 import expelliarmusIcon from "@/assets/expelliarmus-icon.png";
-import boilsIcon from "@/assets/cure-for-boils-icon.png";
 import rictusempraIcon from "@/assets/rictusempra-icon.png";
 import wingardiumleviosaIcon from "@/assets/wingardium-leviosa-icon.png";
 import alohomoraIcon from "@/assets/alohomora-icon.png";
 import flipendoIcon from "@/assets/flipendo-icon.png";
 import noxIcon from "@/assets/nox-icon.png";
+//potions
+import boilsIcon from "@/assets/cure-for-boils-icon.png";
+import wiggenweldIcon from "@/assets/wiggenweld-icon.png";
+
 
 
 export type SpellEffect = "torch" | "disarm" | "galaxy" | "brew" | "tickle" | "levitate" | "unlock" | "flipendo";
 export type SpellCategory = "charm" | "potion";
+export type LibrarySubject =
+  | "potions"
+  | "charms"
+  | "flying"
+  | "transfigurations"
+  | "herbology"
+  | "care-of-magical-creatures"
+  | "defence-against-the-dark-arts"
+  | "history-of-magic"
+  | "divination"
+  | "astronomy"
+  | "muggle-studies";
+
+export const librarySubjects: { id: LibrarySubject; label: string; blurb: string }[] = [
+  { id: "potions", label: "Potions", blurb: "Brews and draughts, simmered with patience." },
+  { id: "charms", label: "Charms", blurb: "Incantations that bend the world to your will." },
+  { id: "flying", label: "Flying", blurb: "Lessons in broomstick control and aerial grace." },
+  { id: "transfigurations", label: "Transfigurations", blurb: "The disciplined art of changing form." },
+  { id: "herbology", label: "Herbology", blurb: "Magical plants, roots, and their hidden properties." },
+  { id: "care-of-magical-creatures", label: "Care of Magical Creatures", blurb: "Respect and care for magical beasts." },
+  { id: "defence-against-the-dark-arts", label: "Defence Against the Dark Arts", blurb: "Protective magic for dangerous encounters." },
+  { id: "history-of-magic", label: "History of Magic", blurb: "The stories behind wizarding history." },
+  { id: "divination", label: "Divination", blurb: "Seek signs in the patterns around you." },
+  { id: "astronomy", label: "Astronomy", blurb: "The magic of stars, planets, and celestial motion." },
+  { id: "muggle-studies", label: "Muggle Studies", blurb: "Understanding the non-magical world." },
+];
 
 export interface BrewStep {
   /** Prompt shown to the apprentice */
@@ -26,6 +56,7 @@ export interface Spell {
   pronunciation: string;
   description: string;
   category: SpellCategory;
+  subject?: LibrarySubject;
   /** SVG path of the wand movement, drawn inside a 0 0 100 100 viewBox */
   wandPath?: string;
   /** Optional simpler path used to recognize a live wand / gyro stroke */
@@ -61,12 +92,15 @@ const FLIPENDO_PATH = "M 20 40 " + "L 30 52 " + "C 35 42, 42 27, 48 18 " + "C 52
 const NOX_PATH = "M 14 70 " + "C 18 58, 22 40, 30 31" + "C 40 20, 48 15, 58 17" + "C 68 22, 78 29, 84 34" + "C 76 33, 68 31, 62 33" + "C 53 36, 49 44, 53 53" + "C 57 63, 69 70, 84 70";
 
 export const spells: Spell[] = [
+  //spells
+  //first year
   {
     id: "lumos",
     name: "Lumos",
     pronunciation: "LOO-mos",
     description: "Provides illumination from the tip of caster's wand.",
     category: "charm",
+    subject: "charms",
     wandPath: LUMOS_PATH,
     movement: "An upward-pointing V, like a triangle missing its base.",
     effect: "torch",
@@ -270,12 +304,15 @@ export const spells: Spell[] = [
       "noxx",
     ],
   },
+  //potions
+  //first year
   {
     id: "cure-for-boils",
     name: "Cure for Boils Potion",
     pronunciation: "Boil Cure",
     description: "A must-know for any teenager wizard.",
     category: "potion",
+    subject: "potions",
     effect: "brew",
     icon: boilsIcon,
     aliases: [
@@ -347,6 +384,241 @@ export const spells: Spell[] = [
           prompt: "The brew turns blue.",
           answer: "Wave your wand to complete the potion",
           decoys: ["Bottle it at once", "Blow out the fire"],
+        },
+      ],
+    },
+  },
+  {
+    id: "wiggenweld",
+    name: "Wiggenweld Potion",
+    pronunciation: "WIG-en-weld",
+    description: "A complex healing potion of some renown.",
+    category: "potion",
+    effect: "brew",
+    icon: wiggenweldIcon,
+    aliases: [
+      "wiggenweld",
+      "wiggen weld",
+      "wiggenweld potion",
+      "wiggen weld potion",
+      "wiggen weld potions",
+      "wiggenweld potions",
+      "wiggenwelt",
+      "wiggenwell",
+      "wiggen world",
+      "wiggen wall",
+    ],
+    potion: {
+      method:
+        "A complex restorative potion brewed through a precise sequence of salamander blood, lionfish spines, Flobberworm Mucus, Honeywater, and boom berry juice, with the brew changing colour at each stage.",
+
+      uses: "A restorative potion intended for consumption.",
+
+      dangers:
+        "The source provided does not specify brewing dangers.",
+
+      difficulty: "Advanced",
+
+      characteristics:
+        "The potion changes through red, orange, yellow, green, turquoise, indigo, pink, red, yellow, purple, orange, yellow, and turquoise during the brewing process. The source does not specify a final colour after cooling.",
+
+      ingredients: [
+        "Salamander blood",
+        "5 lionfish spines",
+        "5 more lionfish spines",
+        "Flobberworm Mucus",
+        "Honeywater",
+        "Boom berry juice",
+      ],
+
+      instructions: [
+        "Add salamander blood until the potion turns red.",
+        "Stir until the potion turns orange.",
+        "Add more salamander blood until the potion turns yellow.",
+        "Stir until the potion turns green.",
+        "Add more salamander blood until the potion turns turquoise.",
+        "Heat until the potion turns indigo.",
+        "Add more salamander blood until the potion turns pink.",
+        "Heat until the potion turns red.",
+        "Add five lionfish spines.",
+        "Heat until the potion turns yellow.",
+        "Add five more lionfish spines.",
+        "Add Flobberworm Mucus until the potion turns purple.",
+        "Stir until it turns red.",
+        "Add more Flobberworm Mucus until the potion turns orange.",
+        "Stir until it turns yellow.",
+        "Add Honeywater until it turns turquoise.",
+        "Add a few drops of boom berry juice.",
+        "Stir again and let it simmer for thirty minutes.",
+        "Take the potion away from the heat and allow it to cool.",
+        "When cooled, the potion is ready for consumption.",
+      ],
+
+      lore: [
+        "The name refers to the Wiggen or Wiggentree and to the word 'weld'.",
+        "Wiggen derives from old Breton for strength, bravery, or courage, while weld refers to joining by heating until melting.",
+      ],
+
+      steps: [
+        {
+          prompt: "Begin the brew.",
+          answer: "Add salamander blood until the potion turns red",
+          decoys: [
+            "Add the lionfish spines",
+            "Pour in the Honeywater",
+          ],
+        },
+        {
+          prompt: "The potion is red.",
+          answer: "Stir until the potion turns orange",
+          decoys: [
+            "Heat until it turns indigo",
+            "Add Flobberworm Mucus",
+          ],
+        },
+        {
+          prompt: "The potion is orange.",
+          answer: "Add more salamander blood until the potion turns yellow",
+          decoys: [
+            "Add the boom berry juice",
+            "Take the cauldron off the heat",
+          ],
+        },
+        {
+          prompt: "The potion is yellow.",
+          answer: "Stir until the potion turns green",
+          decoys: [
+            "Add five lionfish spines",
+            "Add Honeywater",
+          ],
+        },
+        {
+          prompt: "The potion is green.",
+          answer: "Add more salamander blood until the potion turns turquoise",
+          decoys: [
+            "Add the Flobberworm Mucus",
+            "Heat until it turns pink",
+          ],
+        },
+        {
+          prompt: "The potion is turquoise.",
+          answer: "Heat until the potion turns indigo",
+          decoys: [
+            "Stir until it turns orange",
+            "Add Honeywater",
+          ],
+        },
+        {
+          prompt: "The potion is indigo.",
+          answer: "Add more salamander blood until the potion turns pink",
+          decoys: [
+            "Add five lionfish spines",
+            "Remove it from the heat",
+          ],
+        },
+        {
+          prompt: "The potion is pink.",
+          answer: "Heat until the potion turns red",
+          decoys: [
+            "Add Flobberworm Mucus",
+            "Stir until it turns green",
+          ],
+        },
+        {
+          prompt: "The potion is red again.",
+          answer: "Add five lionfish spines",
+          decoys: [
+            "Add five more lionfish spines immediately",
+            "Add Honeywater",
+          ],
+        },
+        {
+          prompt: "The potion has been heated to yellow.",
+          answer: "Add five more lionfish spines",
+          decoys: [
+            "Add salamander blood",
+            "Take the potion away from the heat",
+          ],
+        },
+        {
+          prompt: "The lionfish spines are in.",
+          answer: "Add Flobberworm Mucus until the potion turns purple",
+          decoys: [
+            "Add boom berry juice",
+            "Stir until turquoise",
+          ],
+        },
+        {
+          prompt: "The potion is purple.",
+          answer: "Stir until it turns red",
+          decoys: [
+            "Heat until it turns indigo",
+            "Add Honeywater",
+          ],
+        },
+        {
+          prompt: "The potion is red.",
+          answer: "Add more Flobberworm Mucus until the potion turns orange",
+          decoys: [
+            "Add more salamander blood",
+            "Add the lionfish spines",
+          ],
+        },
+        {
+          prompt: "The potion is orange.",
+          answer: "Stir until it turns yellow",
+          decoys: [
+            "Heat until turquoise",
+            "Add Honeywater immediately",
+          ],
+        },
+        {
+          prompt: "The potion is yellow again.",
+          answer: "Add Honeywater until it turns turquoise",
+          decoys: [
+            "Add salamander blood",
+            "Add five lionfish spines",
+          ],
+        },
+        {
+          prompt: "The potion is turquoise.",
+          answer: "Add a few drops of boom berry juice",
+          decoys: [
+            "Add more Flobberworm Mucus",
+            "Add five lionfish spines",
+          ],
+        },
+        {
+          prompt: "The final ingredient is in.",
+          answer: "Stir the potion and let it simmer for thirty minutes",
+          decoys: [
+            "Bottle it immediately",
+            "Cool it without stirring",
+          ],
+        },
+        {
+          prompt: "The thirty-minute simmer is complete.",
+          answer: "Take the potion away from the heat",
+          decoys: [
+            "Heat it for another thirty minutes",
+            "Add more salamander blood",
+          ],
+        },
+        {
+          prompt: "The potion is off the heat.",
+          answer: "Allow it to cool",
+          decoys: [
+            "Return it to the fire",
+            "Add more Honeywater",
+          ],
+        },
+        {
+          prompt: "The potion has cooled.",
+          answer: "The potion is ready for consumption",
+          decoys: [
+            "Add five more lionfish spines",
+            "Continue heating it",
+          ],
         },
       ],
     },

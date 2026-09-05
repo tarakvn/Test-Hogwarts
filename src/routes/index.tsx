@@ -11,6 +11,7 @@ import { AlohomoraBurst } from "@/components/AlohomoraBurst";
 import { FlipendoBurst } from "@/components/FlipendoBurst";
 import { WandStrokeTrail } from "@/components/WandStrokeTrail";
 import { IncantationKeyboard } from "@/components/IncantationKeyboard";
+import { LanguageToggle } from "@/components/LanguageToggle";
 import { useTorch } from "@/hooks/useTorch";
 import { useSpeechSpell } from "@/hooks/useSpeechSpell";
 import { useWandDraw } from "@/hooks/useWandDraw";
@@ -199,6 +200,7 @@ function CastPage() {
   return (
     <main className="relative min-h-screen">
       <Starfield />
+      <LanguageToggle />
 
       <WandStrokeTrail points={wand.points} live={wand.live} />
 
@@ -346,6 +348,7 @@ function CastPage() {
               <Mic className="h-5 w-5" />
             </button>
           )}
+          <IncantationKeyboard onCast={heard} disabled={Boolean(tracing)} />
         </div>
 
         {inputMode === "draw" ? (
@@ -409,7 +412,6 @@ function CastPage() {
         </Link>
       </div>
 
-      <IncantationKeyboard onCast={heard} disabled={Boolean(tracing)} />
     </main>
   );
 }
