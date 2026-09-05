@@ -146,6 +146,12 @@ const potionText: Record<string, NonNullable<Spell["potion"]>> = {
   },
 };
 
+/** Returns the translated brewing choices written for a potion in this file. */
+export function getPersianBrewSteps(spell: Spell): NonNullable<Spell["potion"]>["steps"] {
+  const translated = potionText[spell.id]?.steps;
+  return translated?.length ? translated : spell.potion?.steps ?? [];
+}
+
 export function localizeSpell(spell: Spell, persian: boolean): Spell {
   if (!persian) return spell;
   const text = persianSpellTranslations[spell.id];

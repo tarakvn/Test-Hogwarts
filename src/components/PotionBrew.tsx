@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Check, RotateCcw, Sparkles } from "lucide-react";
 import snapeImg from "@/assets/potions-master.png";
 import { snapeGrumbles, type BrewStep, type Spell } from "@/data/spells";
-import { translate, usePersianLanguage } from "@/lib/language";
+import { getPersianBrewSteps, translate, usePersianLanguage } from "@/lib/language";
 
 function shuffle<T>(items: T[], seed: number): T[] {
   const out = [...items];
@@ -22,14 +22,7 @@ export function PotionBrew({ spell }: { spell: Spell }) {
   const persian = usePersianLanguage();
   const steps = useMemo<BrewStep[]>(() => {
     const source = spell.potion?.steps ?? [];
-    if (!persian || spell.id !== "wiggenweld" || !spell.potion?.instructions.length) {
-      return source;
-    }
-    return spell.potion.instructions.map((instruction, i) => ({
-      prompt: `مرحله ${i + 1}: حرکت درست را انتخاب کنید.`,
-      answer: instruction,
-      decoys: ["این کار را انجام ندهید", "گزینه نادرست دیگری را انتخاب کنید"],
-    }));
+    return persian ? getPersianBrewSteps(spell) : source;
   }, [persian, spell]);
   const [index, setIndex] = useState(0);
   const [mistake, setMistake] = useState<string | null>(null);
