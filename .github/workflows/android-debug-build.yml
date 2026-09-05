@@ -31,6 +31,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Cache Gradle wrapper and dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            /root/.gradle/wrapper
+            /root/.gradle/caches
+          key: gradle-${{ runner.os }}-${{ hashFiles('android/gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
       - name: Install Node dependencies
         run: npm ci
 
@@ -60,9 +70,20 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x android/gradlew
 
+      - name: Install Android launcher icon
+        run: |
+          mkdir -p android/app/src/main/res/drawable
+          cp src/assets/app-icon.png android/app/src/main/res/drawable/app_icon.png
+
       - name: Build debug APK
         working-directory: android
-        run: ./gradlew assembleDebug
+        run: |
+          for attempt in 1 2 3; do
+            ./gradlew assembleDebug && exit 0
+            echo "Gradle build attempt $attempt failed; retrying..."
+            sleep 10
+          done
+          exit 1
 
       - name: Send APK to Telegram
         env:
